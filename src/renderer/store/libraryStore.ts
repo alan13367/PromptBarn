@@ -40,19 +40,26 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
   selectPrompt: (id) => set({ selectedPromptId: id }),
   load: async () => {
     set({ loading: true, error: null });
-    const result = await window.promptBarn.listLibrary(get().filters);
-    if (!result.ok) {
-      set({ loading: false, error: result.error });
-      return;
+    try {
+      const result = await window.promptBarn.listLibrary(get().filters);
+      if (!result.ok) {
+        set({ loading: false, error: result.error });
+        return;
+      }
+      set((state) => ({
+        ...result.data,
+        loading: false,
+        selectedPromptId:
+          state.selectedPromptId && result.data.prompts.some((prompt) => prompt.id === state.selectedPromptId)
+            ? state.selectedPromptId
+            : (result.data.prompts[0]?.id ?? null)
+      }));
+    } catch (error) {
+      set({
+        loading: false,
+        error: error instanceof Error ? error.message : 'The local library could not be opened.'
+      });
     }
-    set((state) => ({
-      ...result.data,
-      loading: false,
-      selectedPromptId:
-        state.selectedPromptId && result.data.prompts.some((prompt) => prompt.id === state.selectedPromptId)
-          ? state.selectedPromptId
-          : (result.data.prompts[0]?.id ?? null)
-    }));
   },
   savePrompt: async (id, input) => {
     const parsed = promptInputSchema.safeParse(input);

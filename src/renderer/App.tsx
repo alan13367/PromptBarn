@@ -8,6 +8,8 @@ import { PromptEditor } from './features/prompts/PromptEditor';
 import { PromptList } from './features/prompts/PromptList';
 import { useLibraryStore } from './store/libraryStore';
 import type { PromptInput, ThemePreference } from '../shared/types';
+import appIcon from './assets/PromptBarn.png';
+import { InputDialog } from './components/ui/InputDialog';
 
 const THEME_KEY = 'promptbarn.theme';
 
@@ -34,18 +36,60 @@ export function App(): ReactElement {
     await store.savePrompt(id, input);
   };
 
+  const [dialogState, setDialogState] = useState<{
+    isOpen: boolean;
+    title: string;
+    defaultValue: string;
+    onClose: (value: string | null) => void;
+  }>({
+    isOpen: false,
+    title: '',
+    defaultValue: '',
+    onClose: () => {}
+  });
+
+  const promptUser = (title: string, defaultValue: string = ''): Promise<string | null> => {
+    return new Promise((resolve) => {
+      setDialogState({
+        isOpen: true,
+        title,
+        defaultValue,
+        onClose: (value) => {
+          setDialogState((prev) => ({ ...prev, isOpen: false }));
+          resolve(value);
+        }
+      });
+    });
+  };
+
   const createCategory = async (): Promise<void> => {
-    const name = window.prompt('Category name');
+    const name = await promptUser('Category name');
     if (name) await store.createCategory(name);
   };
 
   const renameCategory = async (id: string, currentName: string): Promise<void> => {
-    const name = window.prompt('Rename category', currentName);
+    const name = await promptUser('Rename category', currentName);
     if (name && name !== currentName) await store.renameCategory(id, name);
   };
 
+  if (store.loading && store.prompts.length === 0 && store.categories.length === 0) {
+    return (
+      <div className="flex h-screen items-center justify-center overflow-hidden bg-background text-foreground">
+        <div className="flex flex-col items-center gap-5">
+          <img src={appIcon} alt="" className="h-24 w-24 rounded-[22px] shadow-2xl shadow-cyan-950/40" />
+          <div className="text-center">
+            <div className="text-xl font-bold">PromptBarn</div>
+            <div className="mt-1 h-1 w-40 overflow-hidden rounded-full bg-muted">
+              <div className="h-full w-1/2 animate-pulse rounded-full bg-primary" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex h-screen overflow-hidden bg-background text-foreground">
+    <div className="flex h-screen overflow-hidden bg-background text-foreground app-shell">
       <Sidebar
         categories={store.categories}
         tags={store.tags}
@@ -79,7 +123,7 @@ export function App(): ReactElement {
           </div>
         )}
 
-        <div className="grid min-h-0 flex-1 grid-cols-[360px_1fr]">
+        <div className="grid min-h-0 flex-1 grid-cols-[340px_minmax(0,1fr)] gap-4 p-4">
           <PromptList
             prompts={store.prompts}
             selectedId={store.selectedPromptId}
@@ -97,6 +141,7 @@ export function App(): ReactElement {
           />
         </div>
       </main>
+      <InputDialog {...dialogState} />
     </div>
   );
 }

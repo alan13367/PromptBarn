@@ -61,10 +61,10 @@ export function PromptEditor({
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-center justify-between border-b border-border bg-card px-5 py-3">
+    <section className="panel flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="flex items-center justify-between border-b border-border/70 bg-card/80 px-5 py-4">
         <div className="min-w-0">
-          <div className="truncate text-sm font-semibold">{selectedId ? 'Edit Prompt' : 'New Prompt'}</div>
+          <div className="truncate text-base font-semibold">{selectedId ? 'Edit Prompt' : 'New Prompt'}</div>
           <div className="text-xs text-muted-foreground">
             {prompt ? `Updated ${new Date(prompt.updated_at).toLocaleString()}` : 'Stored locally on this computer'}
           </div>
@@ -89,8 +89,8 @@ export function PromptEditor({
           </Button>
         </div>
       </div>
-      <div className="grid min-h-0 flex-1 grid-rows-[auto_1fr_auto] overflow-hidden">
-        <div className="grid grid-cols-2 gap-4 p-5">
+      <div className="grid min-h-0 flex-1 grid-rows-[auto_minmax(220px,1fr)_auto] overflow-hidden">
+        <div className="grid grid-cols-2 gap-4 p-5 pb-4">
           <label className="col-span-2 text-xs font-medium text-muted-foreground">
             Title
             <Input className="mt-1" value={draft.title} onChange={(event) => update('title', event.target.value)} />
@@ -98,7 +98,7 @@ export function PromptEditor({
           <label className="text-xs font-medium text-muted-foreground">
             Category
             <select
-              className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              className="mt-1 h-10 w-full rounded-md border border-input bg-background/80 px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
               value={draft.category_id}
               onChange={(event) => update('category_id', event.target.value)}
             >
@@ -140,11 +140,11 @@ export function PromptEditor({
             value={draft.body}
             onChange={(event) => update('body', event.target.value)}
             placeholder="Write a reusable prompt. Variables like {{topic}} are detected automatically."
-            className="h-full min-h-[220px] font-mono text-sm"
+            className="h-full min-h-[220px] font-mono text-sm leading-6"
           />
         </div>
         <VariablePanel body={draft.body} onNotice={onNotice} />
       </div>
-    </div>
+    </section>
   );
 }

@@ -15,8 +15,8 @@ export function Button({ className, variant = 'secondary', size = 'md', ...props
       className={cn(
         'inline-flex items-center justify-center gap-2 rounded-md border text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
         variant === 'primary' && 'border-primary bg-primary text-primary-foreground hover:opacity-90',
-        variant === 'secondary' && 'border-border bg-card text-foreground hover:bg-muted',
-        variant === 'ghost' && 'border-transparent bg-transparent hover:bg-muted',
+        variant === 'secondary' && 'border-border bg-card/80 text-foreground hover:bg-muted',
+        variant === 'ghost' && 'border-transparent bg-transparent hover:bg-muted/80',
         variant === 'destructive' && 'border-destructive bg-destructive text-destructive-foreground hover:opacity-90',
         size === 'sm' && 'h-8 px-3',
         size === 'md' && 'h-10 px-4',

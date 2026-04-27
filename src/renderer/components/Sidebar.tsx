@@ -30,8 +30,8 @@ export function Sidebar({
   const activeTags = filters.tagIds ?? [];
 
   return (
-    <aside className="flex h-full w-64 shrink-0 flex-col border-r border-border bg-card">
-      <div className="border-b border-border px-4 py-4">
+    <aside className="flex h-full w-64 shrink-0 flex-col border-r border-border/70 bg-card/90 backdrop-blur">
+      <div className="border-b border-border/70 px-4 py-4">
         <div className="flex items-center gap-3">
           <img src={appIcon} alt="" className="h-10 w-10 rounded-lg" />
           <div className="min-w-0">
@@ -140,8 +140,8 @@ function NavButton({
   return (
     <button
       className={cn(
-        'flex h-9 w-full items-center gap-2 rounded-md px-2 text-left text-sm transition hover:bg-muted',
-        active && 'bg-accent text-accent-foreground',
+        'flex h-9 w-full items-center gap-2 rounded-md px-2 text-left text-sm transition hover:bg-muted/80',
+        active && 'bg-accent text-accent-foreground shadow-sm shadow-cyan-950/20',
         className
       )}
       {...props}
