@@ -1,0 +1,57 @@
+{
+  "name": "promptbarn",
+  "version": "0.1.0",
+  "description": "Offline-first AI prompt library for desktop.",
+  "main": "out/main/main.js",
+  "author": "PromptBarn",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "electron-builder install-app-deps",
+    "package": "npm run build && electron-builder"
+  },
+  "dependencies": {
+    "@electron-toolkit/utils": "^4.0.0",
+    "@tailwindcss/postcss": "^4.2.4",
+    "@vitejs/plugin-react": "^5.2.0",
+    "better-sqlite3": "^12.4.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.11.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.0.0",
+    "zod": "^4.0.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "electron": "^41.3.0",
+    "electron-builder": "^26.8.1",
+    "electron-vite": "^5.0.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^4.2.4",
+    "typescript": "^6.0.3",
+    "vite": "^7.3.2"
+  },
+  "build": {
+    "appId": "com.promptbarn.app",
+    "productName": "PromptBarn",
+    "files": [
+      "out/**"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "assets/PromptBarn.icns"
+    },
+    "dmg": {
+      "backgroundColor": "#0b1224"
+    }
+  }
+}
