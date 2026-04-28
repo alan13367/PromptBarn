@@ -9,7 +9,9 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md' | 'icon';
 }
 
-export function Button({ className, variant = 'secondary', size = 'md', ...props }: ButtonProps): ReactElement {
+export function Button({ className, variant = 'secondary', size = 'md', title, ...props }: ButtonProps): ReactElement {
+  const ariaLabel = props['aria-label'] ?? (typeof title === 'string' && size === 'icon' ? title : undefined);
+
   return (
     <button
       className={cn(
@@ -23,6 +25,8 @@ export function Button({ className, variant = 'secondary', size = 'md', ...props
         size === 'icon' && 'h-9 w-9 p-0',
         className
       )}
+      title={title}
+      aria-label={ariaLabel}
       {...props}
     />
   );

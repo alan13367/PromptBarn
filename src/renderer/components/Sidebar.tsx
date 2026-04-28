@@ -33,7 +33,15 @@ export function Sidebar({
     <aside className="flex h-full w-64 shrink-0 flex-col border-r border-border/70 bg-card/90 backdrop-blur">
       <div className="border-b border-border/70 px-4 py-4">
         <div className="flex items-center gap-3">
-          <img src={appIcon} alt="" className="h-10 w-10 rounded-lg" />
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-background shadow-sm shadow-cyan-950/30">
+            <img
+              src={appIcon}
+              alt=""
+              className="h-full w-full scale-[1.18] object-cover"
+              aria-hidden="true"
+              draggable={false}
+            />
+          </div>
           <div className="min-w-0">
             <div className="text-lg font-bold tracking-normal">PromptBarn</div>
             <div className="text-xs text-muted-foreground">Offline prompt library</div>

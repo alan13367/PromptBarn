@@ -7,7 +7,7 @@ import { Button } from './components/ui/Button';
 import { PromptEditor } from './features/prompts/PromptEditor';
 import { PromptList } from './features/prompts/PromptList';
 import { useLibraryStore } from './store/libraryStore';
-import type { PromptInput, ThemePreference } from '../shared/types';
+import type { Category, PromptInput, ThemePreference } from '../shared/types';
 import appIcon from './assets/PromptBarn.png';
 import { InputDialog } from './components/ui/InputDialog';
 
@@ -18,10 +18,12 @@ export function App(): ReactElement {
   const [theme, setTheme] = useState<ThemePreference>(() => {
     return (localStorage.getItem(THEME_KEY) as ThemePreference | null) ?? 'dark';
   });
+  const [isCreatingPrompt, setIsCreatingPrompt] = useState(false);
   const selectedPrompt = useMemo(
     () => store.prompts.find((prompt) => prompt.id === store.selectedPromptId) ?? null,
     [store.prompts, store.selectedPromptId]
   );
+  const hasSearch = Boolean(store.filters.search?.trim());
 
   useEffect(() => {
     void store.load();
@@ -34,6 +36,7 @@ export function App(): ReactElement {
 
   const savePrompt = async (id: string | null, input: PromptInput): Promise<void> => {
     await store.savePrompt(id, input);
+    setIsCreatingPrompt(false);
   };
 
   const [dialogState, setDialogState] = useState<{
@@ -62,9 +65,10 @@ export function App(): ReactElement {
     });
   };
 
-  const createCategory = async (): Promise<void> => {
+  const createCategory = async (): Promise<Category | null> => {
     const name = await promptUser('Category name');
-    if (name) await store.createCategory(name);
+    if (!name) return null;
+    return store.createCategory(name);
   };
 
   const renameCategory = async (id: string, currentName: string): Promise<void> => {
@@ -105,7 +109,10 @@ export function App(): ReactElement {
           search={store.filters.search ?? ''}
           theme={theme}
           onSearch={(search) => void store.setFilters({ search })}
-          onNewPrompt={() => store.selectPrompt(null)}
+          onNewPrompt={() => {
+            setIsCreatingPrompt(true);
+            store.selectPrompt(null);
+          }}
           onExport={() => void store.exportJson()}
           onImport={() => void store.importJson()}
           onToggleTheme={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))}
@@ -117,7 +124,7 @@ export function App(): ReactElement {
               {store.error ? <AlertCircle className="h-4 w-4" /> : null}
               {store.error ?? store.notice}
             </div>
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={store.clearNotice}>
+            <Button size="icon" variant="ghost" className="h-7 w-7" title="Dismiss message" onClick={store.clearNotice}>
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -128,14 +135,29 @@ export function App(): ReactElement {
             prompts={store.prompts}
             selectedId={store.selectedPromptId}
             loading={store.loading}
-            onSelect={store.selectPrompt}
+            emptyKind={hasSearch ? 'search' : 'library'}
+            search={store.filters.search ?? ''}
+            onSelect={(id) => {
+              setIsCreatingPrompt(false);
+              store.selectPrompt(id);
+            }}
           />
           <PromptEditor
             prompt={selectedPrompt}
             categories={store.categories}
+            isCreating={isCreatingPrompt}
+            hasPrompts={store.prompts.length > 0}
+            onCreate={() => {
+              setIsCreatingPrompt(true);
+              store.selectPrompt(null);
+            }}
+            onCreateCategory={createCategory}
             onSave={savePrompt}
             onDuplicate={(id) => store.duplicatePrompt(id)}
-            onDelete={(id) => store.deletePrompt(id)}
+            onDelete={(id) => {
+              setIsCreatingPrompt(false);
+              return store.deletePrompt(id);
+            }}
             onFavorite={(id, favorite) => store.setFavorite(id, favorite)}
             onNotice={(notice) => useLibraryStore.setState({ notice })}
           />

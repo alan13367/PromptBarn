@@ -1,4 +1,4 @@
-import { SearchX, Star } from 'lucide-react';
+import { Inbox, SearchX, Star } from 'lucide-react';
 import type { ReactElement } from 'react';
 import type { Prompt } from '../../../shared/types';
 import { Badge } from '../../components/ui/Badge';
@@ -8,10 +8,12 @@ interface PromptListProps {
   prompts: Prompt[];
   selectedId: string | null;
   loading: boolean;
+  emptyKind: 'library' | 'search';
+  search: string;
   onSelect: (id: string) => void;
 }
 
-export function PromptList({ prompts, selectedId, loading, onSelect }: PromptListProps): ReactElement {
+export function PromptList({ prompts, selectedId, loading, emptyKind, search, onSelect }: PromptListProps): ReactElement {
   if (loading) {
     return (
       <section className="panel flex min-h-0 flex-col overflow-hidden">
@@ -33,15 +35,23 @@ export function PromptList({ prompts, selectedId, loading, onSelect }: PromptLis
   }
 
   if (prompts.length === 0) {
+    const isSearchEmpty = emptyKind === 'search';
+
     return (
       <section className="panel flex min-h-0 flex-col overflow-hidden">
         <PromptListHeader count={0} />
         <div className="flex flex-1 items-center justify-center p-8 text-center">
-          <div className="max-w-64">
-            <SearchX className="mx-auto h-10 w-10 text-primary" />
-            <div className="mt-4 text-sm font-semibold">No prompts here</div>
+          <div className="max-w-72">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-primary/30 bg-primary/10 text-primary">
+              {isSearchEmpty ? <SearchX className="h-5 w-5" /> : <Inbox className="h-5 w-5" />}
+            </div>
+            <div className="mt-4 text-sm font-semibold">
+              {isSearchEmpty ? 'No search results' : 'No prompts yet'}
+            </div>
             <div className="mt-2 text-sm leading-6 text-muted-foreground">
-              Create a prompt or clear the active filters to bring the library back into view.
+              {isSearchEmpty
+                ? `Nothing matched "${search.trim()}". Try a shorter search or clear filters.`
+                : 'Create your first prompt to start building a local reusable library.'}
             </div>
           </div>
         </div>
@@ -78,6 +88,7 @@ export function PromptList({ prompts, selectedId, loading, onSelect }: PromptLis
               {prompt.tags.slice(0, 3).map((tag) => (
                 <Badge key={tag.id}>{tag.name}</Badge>
               ))}
+              {prompt.tags.length > 3 ? <Badge>+{prompt.tags.length - 3}</Badge> : null}
             </div>
           </button>
         ))}
